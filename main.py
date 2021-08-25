@@ -439,8 +439,7 @@ with open(args.src, 'r') as f:
             DEBUG and print('-------------')
             if keycode in default_keymap:
                 DEBUG and print(v['keycode']  + " -> " + keycode + " = " + v['char'])
-                if re.match('[A-Z]', v['char']):
-                    pass
+                if re.match('^[A-Z]$', v['char']):
                     default_keymap[keycode] = v['char'].lower()
                     default_keymap_shift[keycode] = v['char']
                 else:
@@ -467,11 +466,17 @@ k[true] = {}
 ''')
 
     for k, v in default_keymap.items():
+        k_path = '.' + k
+        if re.match('^\d$', k):
+            k_path = "['" + k + "']"
         if v.isascii():
-            f.write( 'k[false].' + k + ' = ' + "'" + escape_str(v) + "'" + "\n")
+            f.write( 'k[false]' + k_path + ' = ' + "'" + escape_str(v) + "'" + "\n")
     for k, v in default_keymap_shift.items():
+        k_path = '.' + k
+        if re.match('^\d$', k):
+            k_path = "['" + k + "']"
         if v.isascii():
-            f.write( 'k[true].' + k + ' = ' + "'" + escape_str(v) + "'" + "\n")
+            f.write( 'k[true]' + k_path + ' = ' + "'" + escape_str(v) + "'" + "\n")
 
     f.write('''
 
