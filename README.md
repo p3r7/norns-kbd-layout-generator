@@ -13,7 +13,7 @@ run the script, e.g.:
 
 drop the resulting file in the `/home/we/norns/lua/core/keymap/`
 
-tweak the following section in `/home/we/norns/lua/core/keymap/keyboard.lua`
+tweak the following section in `/home/we/norns/lua/core/keyboard.lua`
 
 ```lua
 keyboard.keymap = {}
