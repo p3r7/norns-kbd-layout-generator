@@ -431,7 +431,7 @@ def escape_str(s):
 
 with open(args.src, 'r') as f:
     for line in f:
-        match = re.match('^#define +(?P<alias>\w+) +(?P<keycode>\w+) +// +(?P<char>.+)', line)
+        match = re.match('^#define +(?P<alias>\w+) +(?P<keycode>\w+) +// +(?P<char>.)', line)
         if match:
             v = match.groupdict()
             aliases[v['alias']] = v['keycode']
