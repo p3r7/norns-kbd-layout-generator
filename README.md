@@ -17,8 +17,9 @@ tweak the following section in `/home/we/norns/lua/core/keymap/keyboard.lua`
 
 ```lua
 keyboard.keymap = {}
-keyboard.keymap.us = require 'core/keymap/fr'
-keyboard.selected_map = "fr"
+keyboard.keymap.us = require 'core/keymap/us'
+keyboard.keymap.fr = require 'core/keymap/fr' -- new entry
+keyboard.selected_map = "fr"                  -- changed value
 ```
 
 
