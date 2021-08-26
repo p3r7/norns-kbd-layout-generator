@@ -492,7 +492,7 @@ k[char_modifier.SHIFT] = {}
     if default_keymap_altgr:
         f.write('k[char_modifier.ALTGR] = {}' + "\n")
     if default_keymap_shift_altgr:
-        f.write('k[char_modifier.SHIFT | char_modifier.ALTGR]] = {}' + "\n")
+        f.write('k[char_modifier.SHIFT | char_modifier.ALTGR] = {}' + "\n")
     f.write("\n")
 
     for k, v in default_keymap.items():
