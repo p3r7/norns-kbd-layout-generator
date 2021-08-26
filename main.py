@@ -398,6 +398,8 @@ default_keymap_shift = {
     'SLASH': '?',
 }
 
+default_keymap_altgr = {}
+default_keymap_shift_altgr = {}
 
 ## ------------------------------------------------------------------------
 ## HELPER FNS
@@ -430,13 +432,14 @@ def escape_str(s):
 
 with open(args.src, 'r') as f:
     for line in f:
+        DEBUG and print(line)
         match = re.match('^#define +(?P<alias>\w+) +(?P<keycode>\w+) +// +(?P<char>.)', line)
         if match:
             v = match.groupdict()
             aliases[v['alias']] = v['keycode']
             keycode = get_norns_keycode(v['keycode'])
             DEBUG and print('-------------')
-            if keycode in default_keymap:
+            if keycode and keycode in default_keymap:
                 DEBUG and print(v['keycode']  + " -> " + keycode + " = " + v['char'])
                 if re.match('^[A-Z]$', v['char']):
                     default_keymap[keycode] = v['char'].lower()
@@ -451,31 +454,71 @@ with open(args.src, 'r') as f:
             aliases[v['alias']] = v['keycode']
             keycode = get_norns_keycode(v['keycode'])
             DEBUG and print('-------------')
-            if keycode in default_keymap_shift:
+            if keycode and keycode in default_keymap_shift:
                 DEBUG and print(v['keycode']  + " -> " + keycode + " = " + v['char'])
                 default_keymap_shift[keycode] = v['char']
 
+        altgr_match = re.match('^#define +(?P<alias>\w+) +ALGR\((?P<keycode>\w+)\) +// +(?P<char>.)', line)
+        if altgr_match:
+            v = altgr_match.groupdict()
+            aliases[v['alias']] = v['keycode']
+            keycode = get_norns_keycode(v['keycode'])
+            if keycode:
+                DEBUG and print('-------------')
+                DEBUG and print(v['keycode']  + " -> " + keycode + " = " + v['char'])
+                default_keymap_altgr[keycode] = v['char']
+
+        shift_altgr_match = re.match('^#define +(?P<alias>\w+) +S\(ALGR\((?P<keycode>\w+)\)\) +// +(?P<char>.)', line)
+        if shift_altgr_match:
+            v = shift_altgr_match.groupdict()
+            aliases[v['alias']] = v['keycode']
+            keycode = get_norns_keycode(v['keycode'])
+            if keycode:
+                DEBUG and print('-------------')
+                DEBUG and print(v['keycode']  + " -> " + keycode + " = " + v['char'])
+                default_keymap_shift_altgr[keycode] = v['char']
+
 with open(args.dest, 'w') as f:
     f.write('''
+
+local char_modifier = require 'core/keymap/char_modifier'
+
 local k = {}
 
-k[false] = {}
-k[true] = {}
-
+k[char_modifier.NONE] = {}
+k[char_modifier.SHIFT] = {}
 ''')
+
+    if default_keymap_altgr:
+        f.write('k[char_modifier.ALTGR] = {}' + "\n")
+    if default_keymap_shift_altgr:
+        f.write('k[char_modifier.SHIFT | char_modifier.ALTGR]] = {}' + "\n")
+    f.write("\n")
 
     for k, v in default_keymap.items():
         k_path = '.' + k
         if re.match('^\d$', k):
             k_path = "['" + k + "']"
         if v.isascii():
-            f.write( 'k[false]' + k_path + ' = ' + "'" + escape_str(v) + "'" + "\n")
+            f.write( 'k[char_modifier.NONE]' + k_path + ' = ' + "'" + escape_str(v) + "'" + "\n")
     for k, v in default_keymap_shift.items():
         k_path = '.' + k
         if re.match('^\d$', k):
             k_path = "['" + k + "']"
         if v.isascii():
-            f.write( 'k[true]' + k_path + ' = ' + "'" + escape_str(v) + "'" + "\n")
+            f.write( 'k[char_modifier.SHIFT]' + k_path + ' = ' + "'" + escape_str(v) + "'" + "\n")
+    for k, v in default_keymap_altgr.items():
+        k_path = '.' + k
+        if re.match('^\d$', k):
+            k_path = "['" + k + "']"
+        if v.isascii():
+            f.write( 'k[char_modifier.ALTGR]' + k_path + ' = ' + "'" + escape_str(v) + "'" + "\n")
+    for k, v in default_keymap_shift_altgr.items():
+        k_path = '.' + k
+        if re.match('^\d$', k):
+            k_path = "['" + k + "']"
+        if v.isascii():
+            f.write( 'k[char_modifier.SHIFT | char_modifier.ALTGR]' + k_path + ' = ' + "'" + escape_str(v) + "'" + "\n")
 
     f.write('''
 
