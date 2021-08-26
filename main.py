@@ -405,7 +405,6 @@ default_keymap_shift = {
 aliases = {}
 
 def get_norns_keycode(keycode):
-    global DEBUG
     global aliases
     while keycode in aliases:
         DEBUG and print('  ' + keycode + ' -> ' + aliases[keycode])
