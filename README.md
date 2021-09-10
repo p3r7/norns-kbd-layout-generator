@@ -2,6 +2,8 @@
 
 convert layout files from [QMK project](https://github.com/qmk/qmk_firmware) to monome norns own format.
 
+this is what got used to generate files in [norns/lua/core/keymap/](https://github.com/monome/norns/tree/main/lua/core/keymap).
+
 
 ### usage
 
@@ -11,18 +13,19 @@ run the script, e.g.:
 
     python3 ./main.py --src ~/Code/qmk_firmware/quantum/keymap_extras/keymap_french.h --dest fr.lua
 
-drop the resulting file in the `/home/we/norns/lua/core/keymap/`
+drop the resulting file in the `/home/we/norns/lua/core/keymap/`.
 
-tweak the following section in `/home/we/norns/lua/core/keyboard.lua`
+import it in `/home/we/norns/lua/core/keyboard.lua`:
 
 ```lua
 keyboard.keymap = {}
 keyboard.keymap.us = require 'core/keymap/us'
 keyboard.keymap.fr = require 'core/keymap/fr' -- new entry
-keyboard.selected_map = "fr"                  -- changed value
 ```
 
 ### full dump
+
+this is what got used to generate current set of keymaps.
 
     python3 ./main.py --src ~/Code/qmk_firmware/quantum/keymap_extras/keymap_belgian.h --dest be.lua
     python3 ./main.py --src ~/Code/qmk_firmware/quantum/keymap_extras/keymap_croatian.h --dest hr.lua
@@ -54,4 +57,6 @@ keyboard.selected_map = "fr"                  -- changed value
 
 ### limitations
 
-lots of keyboard layout use AltGr (right Alt key) in addition to Shift for entering a bunch of characters. norns' simple keyboard support implementation currently does not support it.
+the char corresponding to each key is a comment in QMK keymap files. they could have a bad value whithout QMK users noticing.
+
+assumes only `Shift` and `AltGr` as charset modifiers. if other ones exists, it wuld be trivial to add them.
