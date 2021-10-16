@@ -8,8 +8,8 @@ from pprint import pprint
 ## ------------------------------------------------------------------------
 ## DEBUG
 
-DEBUG = False
-# DEBUG = True
+# DEBUG = False
+DEBUG = True
 
 
 ## ------------------------------------------------------------------------
@@ -179,7 +179,7 @@ qmk_aliases = {
     'KC_SCLN': 'KC_SCOLON',
     'KC_QUOT': 'KC_QUOTE',
     'KC_GRV': 'KC_GRAVE',
-    'KC_COMM': 'KC_COMMA',
+    'KC_COMMA': 'KC_COMM',
     'KC_SLSH': 'KC_SLASH',
     'KC_NUBS': 'KC_NONUS_BSLASH',
 
@@ -285,6 +285,10 @@ qmk_aliases = {
     ## System Specific
     'KC_BRMU': 'KC_PAUSE',
     'KC_BRMD': 'KC_SCROLLLOCK',
+
+    ## Mapping ISO-specific keys to qwerty ekyboard
+    'KC_NONUS_HASH': 'KC_BSLASH',
+    ## NB: can't map KC_NUBS...
 }
 
 
@@ -411,7 +415,7 @@ def get_norns_keycode(keycode):
     while keycode in aliases:
         DEBUG and print('  ' + keycode + ' -> ' + aliases[keycode])
         keycode = aliases[keycode]
-    if keycode in qmk_aliases:
+    while keycode in qmk_aliases:
         DEBUG and print('  ' + keycode + ' -> ' + qmk_aliases[keycode])
         keycode = qmk_aliases[keycode]
     if keycode in gmk_2_norns:
@@ -433,6 +437,7 @@ def escape_str(s):
 with open(args.src, 'r') as f:
     for line in f:
         DEBUG and print(line)
+        line = line.replace('// (backslash)', '// \\')
         match = re.match('^#define +(?P<alias>\w+) +(?P<keycode>\w+) +// +(?P<char>.)', line)
         if match:
             v = match.groupdict()
